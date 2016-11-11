@@ -1,0 +1,114 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<dom-module id="delete-contact">
+
+
+  <template>
+
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+    </style>
+    <div class="card">
+     <div>First name: <span>{{contactItem.first}}</span></div>
+     <div>Last name: <span>{{contactItem.last}}</span></div>
+     <div>Mobile Number: <span>{{contactItem.mobile}}</span></div>
+     <!-- <div>{{route}}</div> -->
+     <!-- <div>{{routeData}}</div> -->
+   </div>
+
+  <paper-button toggles raised class="custom green" on-click = "deleteContact">Delete</paper-button>
+
+
+   <iron-ajax id = "ajax"
+auto
+url=""
+method='DELETE'
+handle-as="json"
+content-type="application/json"
+on-response="handleResponse"
+debounce-duration="300"></iron-ajax>
+
+
+ </template>
+
+ <script>
+  Polymer({
+    is: 'delete-contact',
+    properties: {
+      contactItem :{
+        type : Object,
+        notify:true,
+        reflectToAttribute : true,
+        computed : 'getContact(index)'
+      },
+      contacts : {
+        type : Array,
+        notify:true,
+        reflectToAttribute : true
+      },
+      index : {
+        type : Number,
+        notify:true,
+        reflectToAttribute : true,
+        computed: 'computeIndex(path)'
+      },
+      path : {
+        type : String,
+        notify:true,
+        reflectToAttribute : true
+      },
+      route : {
+        type : Object,
+        notify:true,
+        reflectToAttribute : true
+      }
+  },
+    computeIndex : function(path) {
+      console.log(path);
+      return parseInt(path.replace('/',''));
+    },
+     getContact : function(index) {
+      console.log(index);
+      var contact;
+
+      if(this.contacts) {
+       for(var i=0; i < this.contacts.length; i++) {
+        console.log("id",this.contacts[i].id);
+        if(this.contacts[i].id === index) {
+          contact = this.contacts[i];
+        }
+      }
+    }
+    return contact;
+  },
+     handleResponse : function(request) {
+       console.log(request.detail.response);
+       console.log(this.$.ajax.lastResponse);
+       this.contacts = [];
+       this.contacts = this.$.ajax.lastResponse;
+        console.log("route",this.route);
+        this.set('route.path', '/contacts');
+     },
+     deleteContact : function() {
+       console.log(this.contactItem);
+      this.splice('contacts',this.index,1);
+      console.log(this.contacts);
+        // this.contacts[this.index] = this.contactItem;
+        var newContacts = this.contacts;
+        this.contacts = [];
+        this.contacts = newContacts;
+        this.$.ajax.url = "http:localhost:3000/contacts/delete/"+this.index;
+        this.$.ajax.generateRequest();
+     }
+});
+</script>
+
+</dom-module>

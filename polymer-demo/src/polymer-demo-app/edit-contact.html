@@ -1,0 +1,144 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="shared-styles.html">
+
+
+<dom-module id="edit-contact">
+
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+
+        paper-button.custom {
+          --paper-button-ink-color: var(--paper-pink-a200);
+    /* These could also be individually defined for each of the
+    specific css classes, but we'll just do it once as an example */
+    --paper-button-flat-keyboard-focus: {
+      background-color: var(--paper-pink-a200);
+      color: white !important;
+    };
+    --paper-button-raised-keyboard-focus: {
+      background-color: var(--paper-pink-a200) !important;
+      color: white !important;
+    };
+  }
+  paper-button.custom:hover {
+    background-color: var(--paper-indigo-100);
+  }
+
+  paper-button.green {
+    background-color: var(--paper-green-500);
+    color: white;
+  }
+  paper-button.green[active] {
+    background-color: var(--paper-red-500);
+  }
+}
+</style>
+<div class="card">
+ 
+  <paper-input label="First Name" char-counter value = {{contactItem.first}}></paper-input>
+  <paper-input label="Last Name" char-counter value = {{contactItem.last}}></paper-input>
+  <paper-input label="Mobile number" type="number" value = {{contactItem.mobile}}></paper-input>
+</div>
+
+<!-- <div>{{path}}</div> -->
+
+<paper-button toggles raised class="custom green" on-click = "saveContact">Save</paper-button>
+
+<iron-ajax id = "ajax"
+auto
+url=""
+body=''
+method='POST'
+handle-as="json"
+content-type="application/json"
+on-response="handleResponse"
+debounce-duration="300"></iron-ajax>
+
+</template>
+
+<script>
+  Polymer({
+    is: 'edit-contact',
+    properties: {
+      contactItem :{
+        type : Object,
+        notify:true,
+        reflectToAttribute : true,
+        computed : 'getContact(index)'
+      },
+      contacts : {
+        type : Array,
+        notify:true,
+        reflectToAttribute : true
+      },
+      index : {
+        type : Number,
+        notify:true,
+        reflectToAttribute : true,
+        computed: 'computeIndex(path)'
+      },
+      path : {
+        type : String,
+        notify:true,
+        reflectToAttribute : true
+      },
+      route : {
+        type : Object,
+        notify:true,
+        reflectToAttribute : true
+      }
+    },
+    computeIndex : function(path) {
+      console.log(path);
+      return parseInt(path.replace('/',''));
+    },
+    getContact : function(index) {
+      console.log(index);
+      var contact;
+
+      if(this.contacts) {
+       for(var i=0; i < this.contacts.length; i++) {
+        console.log("id",this.contacts[i].id);
+        if(this.contacts[i].id === index) {
+          contact = this.contacts[i];
+        }
+      }
+    }
+    return contact;
+  },
+    saveContact : function(event) {
+      console.log(this.contactItem);
+      this.splice('contacts',this.index,1,this.contactItem);
+      console.log(this.contacts);
+        // this.contacts[this.index] = this.contactItem;
+        var newContacts = this.contacts;
+        this.contacts = [];
+        this.contacts = newContacts;
+        this.$.ajax.url = "http:localhost:3000/contacts/edit/"+this.index;
+        this.$.ajax.body=this.contactItem;
+        this.$.ajax.generateRequest();
+        // this.notifySplices('contacts',['index'],this.contacts);
+        // this.notifyPath
+      },
+      handleResponse : function(request) {
+       console.log(request.detail.response);
+       console.log(this.$.ajax.lastResponse);
+       this.contacts = [];
+       this.contacts = this.$.ajax.lastResponse;
+        console.log("route",this.route);
+        this.set('route.path', '/contacts');
+     }
+   });
+ </script>
+
+</dom-module>
