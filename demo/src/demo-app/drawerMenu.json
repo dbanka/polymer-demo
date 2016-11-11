@@ -1,0 +1,25 @@
+[{
+	"name" : "Create",
+	"href" : "/create"
+},
+{
+	"name" : "Contacts",
+	"href" : "/contacts"
+},
+{
+   "name":"Github",
+   "href":"http://www.github.com"
+},
+{
+   "name":"Gmail",
+   "href":"http://www.gmail.com"
+},
+{
+   "name":"StackOverflow",
+   "href":"http://www.stackOverflow.com"
+},
+{
+   "name":"Polymer",
+   "href":"http://www.polymer-project.org"
+}
+]

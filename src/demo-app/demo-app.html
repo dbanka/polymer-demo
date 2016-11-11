@@ -1,0 +1,75 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="login-form.html">
+<link rel="import" href="polymer-demo-app.html">
+<link rel="import" href="demo2-app.html">
+
+
+
+    <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+
+
+<dom-module id="demo-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      [hidden] {
+        display: none !important;
+      }
+
+    </style>
+
+
+<iron-localstorage id="local" name="xyz" value="{{storedUser}}"></iron-localstorage>
+
+<template id="xyx" is="dom-if" if="{{!storedUser.loggedin}}">
+  <login-form  email_placeholder="email@site.com" stored-user={{storedUser}} ></login-form>
+</template>
+
+<template is="dom-if" if="{{storedUser.loggedin}}">
+<polymer-demo-app ></polymer-demo-app>
+</template>
+
+
+
+
+  </template>
+
+
+
+
+
+
+
+
+
+  <script>
+    Polymer({
+
+      is: 'demo-app',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'demo-app',
+        },
+        storedUser:{
+          type:Object,
+          notify:true,
+          reflectToAttribute:true,
+          value: function(){
+            return {
+              "loggedin":false,
+              "token":"",
+              "username":""
+          }
+        
+          }
+
+        }
+      }
+
+    });
+  </script>
+</dom-module>

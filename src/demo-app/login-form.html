@@ -1,0 +1,219 @@
+	<link rel="import" href="../../bower_components/polymer/polymer.html">
+	<!-- <link rel="import" href="../../bower_components/input/input.html"> -->
+	<link rel="import" href="polymer-demo-app.html">
+    <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+    <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+
+
+
+
+
+	<dom-module id="login-form">
+	    <template>
+	    	<link rel="stylesheet" href="style.css">
+
+
+	<div class="container">
+		<section id="content">
+<!-- 			<form id="form" >
+ -->				<h1>Login Form</h1>
+				<div>
+			
+				<input type="email" placeholder="{{email_placeholder}}" id="email" value="{{email::change}}" ></input>
+				<div class="status" id="email_status"></div>
+
+				</div>
+				<div>
+	                <input type="password" name="password" placeholder="Password" required="" id="password" value="{{password::change}}" ></input>
+	               <div class="status" id="password_status"></div>
+				</div>
+								
+				<div id="msg" hidden="{{!failed}}" style="color: red">[[msg]]</div>
+				<div>
+				<input type="submit" id="submit" value="Connect" on-click="submitted">
+					<!-- <input type="submit" value="Log in" /> -->
+				</div>
+			<!-- </form>form -->
+		</section><!-- content -->
+	</div><!-- container -->
+ <!-- <iron-ajax
+    id="registerLoginAjax"
+    method="post"
+    content-type="application/json"
+    handle-as="json"
+    on-response="handleUserResponse"
+    url=""
+    body=""
+    on-error="handleUserError"></iron-ajax> -->
+
+    <iron-ajax id = "registerLoginAjax"
+ url=""
+ body=''
+ method='POST'
+ handle-as="json"
+ content-type="application/json"
+ on-response="handleUserResponse"
+ on-error="handleUserError"
+ debounce-duration="300"></iron-ajax>
+
+
+<!-- <iron-localstorage id="localstorage" name="user-storage" value="{{storedUser}}"></iron-localstorage> -->
+
+
+	    </template>
+	    <script>
+	     
+
+	  function isEmail(email) {
+	    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+	    return regex.test(email);
+	  }
+
+	  function isPasswordValid(pwd, pwd_min_length) {
+	  	console.log(pwd);
+	  	console.log(pwd_min_length);
+	    return pwd.length >= pwd_min_length
+	  }
+
+
+	  function addClass(element, className) {
+	    var regex = new RegExp('\\b' + className + '\\b', 'g');
+	    element.className = element.className.replace(regex, '');
+	    element.className = element.className + " " + className;
+	  }
+
+	  function removeClass(element, className) {
+	    var regex = new RegExp('\\b' + className + '\\b', 'g');
+	    element.className = element.className.replace(regex, '');
+	  }
+	    	
+
+
+	    	Polymer({
+
+	      is: 'login-form',
+
+	      properties: {
+	        prop1: {
+	          type: String,
+	          value: 'demo-app',
+	        },
+	        failed:{
+	        	type:Boolean,
+	        	value:false
+	        },
+	        email:String,
+	        email_placeholder:{
+	        	type:String,
+	        	value:"email@site.com"
+	        },
+	        password:String,
+	        password_min_length:{
+	        	type:Number,
+	        	value:6
+	        }, 
+	        handler:{
+	        	type:String,
+	        	value:"#"
+	        },
+	        failed:{
+	        	type:Boolean,
+	        	value:false,
+	        	observer: "statusChange"
+	        },
+	        msg:{
+	        	type:String
+	        },
+	       storedUser:{
+          type:Object,
+          notify:true,
+          reflectToAttribute:true      
+          
+
+        }
+	      },
+	       statusChange: function(){
+	       	console.log("-------------");
+	        	if (this.failed) {
+	        	this.msg = "Invalid Username/Password";
+	        	this.$.msg.style.display = "block";
+	      		} else{
+	      			this.msg="";
+	      		}
+	        },
+	        handleUserResponse: function(event){
+				 var response =event.detail.response;
+                 console.log(response);
+				    if (response.success) {
+				        this.error = '';
+				        this.storedUser = {
+				            token: response.token,
+				            loggedin: true
+				        };
+				    }
+				    // reset form data
+				    this.email = "";
+				    this.password="";
+	        },
+	        handleUserError: function(event){
+	        	this.failed=true;
+	        },
+	        submitted: function (e) {
+	        if (isEmail(this.email) && isPasswordValid(this.password, this.password_min_length)) {
+	        	this.$.registerLoginAjax.url="http://localhost:3000/authenticate";
+	        	this.$.registerLoginAjax.body={
+	        		"username":this.email,
+	        		"password":this.password
+	        	}
+	        	this.$.registerLoginAjax.generateRequest();
+	
+	        } else{
+	        	this.failed=true;
+		      // myself.notifyPath('storedUser.loggedin');
+	        }
+	        },
+	        ready: function () {
+	      var myself = this;
+	      var submit = this.$.submit;
+	      var msg = this.$.msg;
+	      var email=this.$.email;
+	      var password=this.$.password
+	      console.log(this.password_min_length);
+	      //initializing element
+	   
+	     
+	      
+
+	      //validating email
+	      email.onkeyup = function (e) {
+	        if (isEmail(this.value)) {
+	          console.log("hahahah");
+	          removeClass(myself.$.email_status, "invalid");
+	          addClass(myself.$.email_status, "valid");
+	        } else {
+	        	console.log("hihihihi");
+	          removeClass(myself.$.email_status, "valid");
+	          addClass(myself.$.email_status, "invalid");
+	        }
+	      };
+
+	      //validating password
+	      password.onkeyup = function (e) {
+	        if (isPasswordValid(this.value, myself.password_min_length)) {
+	          removeClass(myself.$.password_status, "invalid");
+	          addClass(myself.$.password_status, "valid");
+	        } else {
+	          removeClass(myself.$.password_status, "valid");
+	          addClass(myself.$.password_status, "invalid");
+	        }
+	      };
+
+	      //onclick
+	  
+	        
+	      
+	    }
+
+	    });
+	    </script>
+	</polymer-element>

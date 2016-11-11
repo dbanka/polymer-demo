@@ -1,0 +1,125 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="shared-styles.html">
+<dom-module id="create-contact">
+
+
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+
+        paper-button.custom {
+          --paper-button-ink-color: var(--paper-pink-a200);
+    /* These could also be individually defined for each of the
+    specific css classes, but we'll just do it once as an example */
+    --paper-button-flat-keyboard-focus: {
+      background-color: var(--paper-pink-a200);
+      color: white !important;
+    };
+    --paper-button-raised-keyboard-focus: {
+      background-color: var(--paper-pink-a200) !important;
+      color: white !important;
+    };
+  }
+  paper-button.custom:hover {
+    background-color: var(--paper-indigo-100);
+  }
+
+  paper-button.green {
+    background-color: var(--paper-green-500);
+    color: white;
+  }
+  paper-button.green[active] {
+    background-color: var(--paper-red-500);
+  }
+}
+</style>
+<div class="card">
+ 
+  <paper-input label="First Name" char-counter value = {{contactItem.first}}></paper-input>
+  <paper-input label="Last Name" char-counter value = {{contactItem.last}}></paper-input>
+  <paper-input label="Mobile number" type="number" value = {{contactItem.mobile}}></paper-input>
+</div>
+<paper-button toggles raised class="custom green" on-click = "addContact">ADD</paper-button>
+
+<iron-ajax id = "ajax"
+auto
+url=""
+body=''
+method='POST',
+content-type="application/json"
+handle-as="json"
+on-response="handleResponse"
+debounce-duration="300"></iron-ajax>
+
+
+</template>
+
+<script>
+  Polymer({
+    is: 'create-contact',
+    properties: {
+      page : {
+        type : Object,
+        reflectToAttribute: true,
+      },
+      contactItem :{
+        type : Object,
+        value : function() {
+          return {};
+        }
+      },
+      contacts : {
+        type : Array,
+        notify:true,
+        reflectToAttribute : true
+      },
+      route : {
+        type : Object,
+        notify:true,
+        reflectToAttribute : true
+      }
+    },
+    observers: [
+    '_routePageChanged(routeData.page)'
+    ],
+
+    _routePageChanged: function(page) {
+      this.page = page || 'contacts';
+    },
+    addContact : function(event) {
+      console.log(this.contactItem);
+      this.push('contacts',this.contactItem);
+          // this.contacts.push(this.contactItem);
+          console.log(this.contacts);
+          this.$.ajax.url = "http://localhost:3000/contacts/create";
+          this.$.ajax.body=this.contactItem;
+          this.$.ajax.generateRequest();
+          this.contactItem = {};
+        // this.notifySplices('contacts',['index'],this.contacts);
+        // this.notifyPath
+        console.log("route",this.route);
+        this.set('route.path', '/contacts');
+      },
+      handleResponse : function(request) {
+       console.log(request.detail.response);
+       console.log(this.$.ajax.lastResponse);
+       // this.contacts = [];
+       this.contacts = this.$.ajax.lastResponse;
+          // console.log(route);
+          // console.log("route",this.route);
+           this.set('route.path', '/contacts');
+          //   console.log(route);
+        }
+      });
+    </script>
+
+  </dom-module>

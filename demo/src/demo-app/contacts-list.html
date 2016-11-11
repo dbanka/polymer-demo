@@ -1,0 +1,56 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="./my-contact.html">
+<dom-module id="contacts-list">
+
+  <template>
+<style type="text/css">
+   h1 {
+  color: #7E7E7E;
+  font: bold 25px Helvetica, Arial, sans-serif;
+  letter-spacing: -0.05em;
+  padding-left: 50px;
+}
+</style>
+    <h1> Contact list: </h1>
+    <template is="dom-repeat" items="{{contacts}}">
+
+    <my-contact index = {{item.id}} contact-item = {{item}}></my-contact>
+   </template>
+
+ </template>
+
+ <script>
+  Polymer({
+    is: 'contacts-list',
+    properties : {
+      page : {
+        type : String
+      },
+      contacts : {
+        type : Array,
+        notify:true,
+        reflectToAttribute : true
+      },
+      selectedContact : {
+        type : Object
+      }
+    },
+
+    observers: [
+    '_routePageChanged(routeData.page)'
+    ],
+
+    _routePageChanged: function(page) {
+      this.page = page || 'contacts';
+    },
+
+    selectContact : function(event) {
+      this.selectedContact = event.model.item;
+    }
+  });
+</script>
+
+</dom-module>

@@ -1,0 +1,103 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../../bower_components/app-layout/demo/sample-content.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+
+
+<dom-module id="demo2-app">
+
+  <template>
+
+    <style>
+      :host {
+        --app-primary-color: #404040;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+
+      app-drawer {
+        --app-drawer-content-container: {
+          background-color: var(--app-primary-color);
+          overflow-x: hidden;
+        };
+      }
+
+      app-drawer app-header {
+        background-color: var(--app-primary-color);
+      }
+    app-drawer section {
+      height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      /*background-color: black;*/
+    }
+
+    app-header {
+      color: #fff;
+      background-color: #C62828;
+      --app-header-background-front-layer: {
+        background-color: #1E88E5;
+        background-position: 50% 10%;
+      };
+    }
+
+    [main-title] {
+      font-size: 2em;
+    }
+
+    </style>
+
+    <app-drawer-layout>
+
+      <app-drawer swipe-open>
+        <section>
+  <paper-menu selected="0">
+    <paper-item>Item One</paper-item>
+    <paper-item>Item Two</paper-item>
+    <paper-item>Item Three</paper-item>
+  </paper-menu>
+
+        </section>
+      </app-drawer>
+
+      <app-header-layout>
+
+        <app-header
+            condenses
+            fixed
+            effects="blend-background parallax-background waterfall">
+
+        
+          <app-toolbar></app-toolbar>
+
+          <app-toolbar>
+            <div main-title spacer>Bootcamp Demo</div>
+          </app-toolbar>
+
+        </app-header>
+
+        <sample-content size="100"></sample-content>
+
+      </app-header-layout>
+
+    </app-drawer-layout>
+
+  </template>
+
+  <script>
+
+  Polymer({
+
+    is: 'demo2-app'
+  });
+
+  </script>
+
+</dom-module>
+
